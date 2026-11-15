@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:,">
+<meta name="description" content="Crown & Charter: a Minecraft mod about living cities, connected economies, and nations. A short pitch and a quick survey.">
+<title>Crown &amp; Charter: a world with a life of its own</title>
+<style>
+  :root {
+    --bg: #efe4cb;
+    --bg-deep: #e4d4b0;
+    --card: #f8f0dc;
+    --ink: #2a2015;
+    --ink-soft: #57442f;
+    --seal: #8c1d1d;
+    --seal-ink: #ffffff;
+    --gold: #735816;
+    --line: #b89b6a;
+    --focus: #1d4f8c;
+    --chip: #efe2c4;
+    --control-line: #8c7148;
+    --chip-on: #8c1d1d;
+    --chip-on-ink: #ffffff;
+    --shadow: 0 1px 0 rgba(255,255,255,.6) inset, 0 6px 18px rgba(70,45,15,.12);
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, Cambria, "Times New Roman", serif;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17120c;
+      --bg-deep: #0f0b07;
+      --card: #251d14;
+      --ink: #f1e6cc;
+      --ink-soft: #cdb994;
+      --seal: #e27a6b;
+      --seal-ink: #1a0f0a;
+      --gold: #d9b15c;
+      --line: #6e5836;
+      --focus: #8fc1ff;
+      --chip: #2e2419;
+      --control-line: #8f7550;
+      --chip-on: #e27a6b;
+      --chip-on-ink: #1a0f0a;
+      --shadow: 0 0 0 1px rgba(217,177,92,.08) inset, 0 8px 24px rgba(0,0,0,.45);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    background-color: var(--bg);
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(255,255,255,.35), transparent 55%),
+      radial-gradient(ellipse at 85% 80%, rgba(120,80,30,.10), transparent 60%),
+      radial-gradient(ellipse at 50% 120%, var(--bg-deep), transparent 70%);
+  }
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-image:
+        radial-gradient(ellipse at 50% -10%, rgba(217,150,60,.16), transparent 55%),
+        radial-gradient(ellipse at 90% 90%, rgba(217,150,60,.06), transparent 60%);
+    }
+  }
+
+  a { color: var(--seal); text-underline-offset: .18em; }
+  a:hover { text-decoration-thickness: 2px; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 4px; }
+
+  .skip {
+    position: absolute; left: .5rem; top: -4rem; z-index: 10;
+    background: var(--card); color: var(--ink); padding: .6rem 1rem; border: 2px solid var(--ink);
+  }
+  .skip:focus { top: .5rem; }
+
+  .wrap { max-width: 56rem; margin: 0 auto; padding: 0 1.25rem; }
+  .narrow { max-width: 44rem; }
+
+  h1, h2, h3 { line-height: 1.2; font-weight: 700; letter-spacing: .01em; }
+  h2 { font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2rem); margin: 0 0 .6rem; }
+  h3 { font-size: 1.15rem; margin: 0 0 .3rem; }
+  p { margin: 0 0 1rem; }
+  .lede { font-size: 1.15rem; color: var(--ink-soft); }
+
+  /* Concept art slots: hidden until an image is added */
+  .art { margin: 1.5rem 0; }
+  .art:empty { display: none; }
+  .art img { display: block; width: 100%; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: .4rem; box-shadow: var(--shadow); }
+  .art figcaption { margin-top: .5rem; font-family: var(--sans); font-size: .85rem; color: var(--ink-soft); text-align: center; }
+  .stories { display: grid; gap: 2.25rem; margin-top: 1.25rem; }
+  .story { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; align-items: center; }
+  .story:nth-child(even) img { order: 2; }
+  .story img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: .4rem; box-shadow: var(--shadow); }
+  .story h3 { margin: .1rem 0 .5rem; }
+  .story p { margin: 0; }
+  .story .who { font-family: var(--sans); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .art-note { margin: 1.5rem 0 0; font-family: var(--sans); font-size: .85rem; color: var(--ink-soft); text-align: center; }
+  @media (max-width: 40rem) { .story { grid-template-columns: 1fr; gap: .9rem; } .story:nth-child(even) img { order: 0; } }
+
+  /* Pull one thread: a road with milestones */
+  .thread { list-style: none; margin: 1.5rem 0 0; padding: 0; position: relative; max-width: 40rem; }
+  .thread::before { content: ""; position: absolute; left: .35rem; top: .5rem; bottom: 1.6rem; border-left: 2px dashed var(--ink-soft); opacity: .45; }
+  .thread li { position: relative; padding: 0 0 1.1rem 2rem; }
+  .thread li::before { content: ""; position: absolute; left: .08rem; top: .3rem; width: .6rem; height: .6rem; background: var(--seal); transform: rotate(45deg); }
+  .thread .when { display: block; font-family: var(--sans); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .thread p { margin: .1rem 0 0; }
+  h3.sub { margin: 2rem 0 .4rem; }
+
+  /* Hero */
+  header.hero { padding: 3rem 0 1.5rem; text-align: center; }
+  .seal { width: 7rem; height: 7rem; margin: 0 auto 1rem; display: block; }
+  .hero h1 {
+    font-size: clamp(2.6rem, 1.6rem + 5vw, 4.4rem); margin: 0; font-variant: small-caps; letter-spacing: .03em;
+  }
+  .hero h1 .amp { color: var(--seal); font-style: italic; }
+  .promise {
+    font-size: clamp(1.25rem, 1rem + 1.2vw, 1.65rem); font-style: italic; margin: .9rem auto 1rem; max-width: 36rem;
+  }
+  .hero .what { max-width: 38rem; margin: 0 auto 1.25rem; color: var(--ink-soft); }
+  .status-chip {
+    display: inline-block; font-family: var(--sans); font-size: .85rem; font-weight: 600;
+    padding: .35rem .8rem; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink-soft);
+  }
+  .actions { display: flex; justify-content: center; margin: 1.25rem 0 0; }
+
+  .btn {
+    font: 600 1rem/1 var(--sans); display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+    min-height: 2.9rem; padding: .8rem 1.3rem; border-radius: .5rem; cursor: pointer; text-decoration: none;
+    border: 2px solid var(--seal); transition: transform .15s ease, background-color .2s ease, color .2s ease;
+  }
+  .btn-primary { background: var(--seal); color: var(--seal-ink); }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-ghost { background: transparent; color: var(--seal); }
+  .btn-ghost:hover { background: var(--card); }
+
+  /* Map-like divider */
+  .divider { display: block; width: 100%; max-width: 40rem; height: 2.5rem; margin: 1.5rem auto; color: var(--line); }
+
+  section { padding: .5rem 0 1.25rem; scroll-margin-top: 1rem; }
+
+  /* Scene captions and beats */
+  .cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)); margin: 0; padding: 0; list-style: none; }
+  .card {
+    position: relative; background: var(--card); border: 1px solid var(--line); border-radius: .3rem;
+    padding: 1.1rem 1.2rem; box-shadow: var(--shadow);
+  }
+  .card::before {
+    content: ""; position: absolute; inset: .35rem; border: 1px dashed var(--line); border-radius: .2rem; pointer-events: none; opacity: .7;
+  }
+  .card p { margin: 0; font-size: 1.02rem; }
+
+  /* Paths */
+  .paths { display: grid; gap: 1rem 1.5rem; grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr)); margin-top: 1rem; }
+  .paths h3 { display: flex; align-items: center; gap: .5rem; font-size: 1.05rem; margin-bottom: .45rem; }
+  .paths h3 svg { width: 1.35rem; height: 1.35rem; color: var(--seal); flex: none; }
+  .tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+  .tags li {
+    font-family: var(--sans); font-size: .9rem; padding: .25rem .7rem; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--card); color: var(--ink);
+  }
+
+  /* Survey */
+  .survey { background: var(--card); border: 1px solid var(--line); border-radius: .8rem; padding: 1.5rem 1.25rem; box-shadow: var(--shadow); margin-top: 1rem; max-width: 44rem; }
+  fieldset { border: 0; padding: 0; margin: 0 0 1.5rem; min-width: 0; }
+  legend { font-weight: 700; font-size: 1.1rem; margin-bottom: .2rem; padding: 0; }
+  .hint { font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); margin: 0 0 .7rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .chip label {
+    display: inline-flex; align-items: center; gap: .45rem; min-height: 2.75rem; padding: .55rem .95rem;
+    border: 1.5px solid var(--control-line); border-radius: 999px; background: var(--chip); cursor: pointer;
+    font-family: var(--sans); font-size: .95rem; transition: background-color .15s ease, border-color .15s ease;
+  }
+  .chip label::before {
+    content: ""; width: .9rem; height: .9rem; border: 1.5px solid currentColor; border-radius: .2rem; flex: none;
+  }
+  .chip input[type="radio"] + label::before { border-radius: 50%; }
+  .chip input:checked + label { background: var(--chip-on); color: var(--chip-on-ink); border-color: var(--chip-on); }
+  .chip input:checked + label::before { background: currentColor; box-shadow: inset 0 0 0 2px var(--chip-on); }
+  .chip input:focus-visible + label { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .chip label:hover { border-color: var(--seal); }
+  [data-group="interest"] { flex-wrap: nowrap; max-width: 22rem; gap: .4rem; }
+  [data-group="interest"] .chip { flex: 1 1 0; min-width: 0; }
+  [data-group="interest"] .chip label { width: 100%; justify-content: center; padding: .55rem .3rem; }
+  .field { margin-bottom: 1.5rem; }
+  .field label.block { display: block; font-weight: 700; font-size: 1.1rem; margin-bottom: .2rem; }
+  textarea, input[type="text"] {
+    width: 100%; font: 1rem/1.5 var(--sans); color: var(--ink); background: var(--bg);
+    border: 1.5px solid var(--control-line); border-radius: .4rem; padding: .7rem .8rem;
+  }
+  textarea { min-height: 5rem; resize: vertical; }
+  .form-actions { display: flex; gap: .75rem; flex-wrap: wrap; align-items: center; }
+
+  .result { margin-top: 1.5rem; border-top: 1px dashed var(--line); padding-top: 1.25rem; }
+  .result pre {
+    white-space: pre-wrap; word-break: break-word; font: .95rem/1.55 ui-monospace, "Cascadia Mono", Consolas, Menlo, monospace;
+    background: var(--bg); border: 1px solid var(--line); border-radius: .4rem; padding: 1rem; margin: 0 0 1rem; color: var(--ink);
+  }
+  .copy-status { font-family: var(--sans); font-size: .95rem; color: var(--ink-soft); min-height: 1.5em; }
+
+  footer { padding: 1.5rem 0 3rem; text-align: center; font-family: var(--sans); font-size: .9rem; color: var(--ink-soft); }
+  footer p { margin: 0 0 .4rem; }
+
+  @media (max-width: 34rem) {
+    body { font-size: 1.05rem; }
+    header.hero { padding-top: 2.25rem; }
+    .seal { width: 6rem; height: 6rem; }
+    .btn { width: 100%; }
+    .form-actions .btn { width: auto; flex: 1 1 auto; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Reusable inline icons (decorative) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-sword" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M20 4 10.5 13.5M20 4v3.5L11.5 16M20 4h-3.5L8 12.5M7 11l6 6M9.5 14.5 5 19M4 18l2 2"/></symbol>
+    <symbol id="i-coin" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-scroll" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M6 4h11a2 2 0 0 1 2 2v12a2 2 0 0 0 2 2H8a2 2 0 0 1-2-2V4Zm0 0a2 2 0 0 0-2 2v2h2M10 9h6M10 13h6"/></symbol>
+    <symbol id="i-crown" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 10H5L3 8Z"/></symbol>
+  </defs>
+</svg>
+
+<header class="hero">
+  <div class="wrap">
+    <svg class="seal" viewBox="0 0 120 120" role="img" aria-label="A red wax seal stamped with a crown">
+      <defs>
+        <radialGradient id="wax" cx="40%" cy="35%" r="70%">
+          <stop offset="0" stop-color="#c24a3c"/>
+          <stop offset=".6" stop-color="#8c1d1d"/>
+          <stop offset="1" stop-color="#5e1010"/>
+        </radialGradient>
+      </defs>
+      <path fill="url(#wax)" d="M60 4c9 0 12 6 20 8s15 1 20 8 1 14 4 21 11 11 11 19-8 12-11 19 1 15-4 21-13 5-20 8-11 8-20 8-12-6-20-8-15-1-20-8-1-14-4-21S5 68 5 60s8-12 11-19-1-15 4-21 13-5 20-8 11-8 20-8Z"/>
+      <circle cx="60" cy="60" r="36" fill="none" stroke="#f0c9a8" stroke-opacity=".55" stroke-width="2"/>
+      <circle cx="60" cy="60" r="31" fill="none" stroke="#3d0808" stroke-opacity=".35" stroke-width="1.5"/>
+      <path fill="#f3d6b8" fill-opacity=".85" d="M38 52l9 8 13-15 13 15 9-8-4 22H42l-4-22Zm4 25h36v5H42z"/>
+    </svg>
+    <h1>Crown <span class="amp">&amp;</span> Charter</h1>
+    <p class="promise">“The world has a life of its own, and it remembers what you do.”</p>
+    <p class="what">A Minecraft mod about living cities, connected economies, and nations that rise, trade, and go to war.</p>
+    <span class="status-chip">Early development · no release date</span>
+    <figure class="art" data-slot="hero">
+      <img src="images/hero-town.webp" alt="Voxel concept art of a living medieval town on a river with a stone bridge, market square, and distant mountains at golden hour" width="1600" height="893">
+      <figcaption>AI-generated concept art, not in-game footage</figcaption>
+    </figure>
+    <div class="actions">
+      <a class="btn btn-primary" href="#survey">Take the survey</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<svg class="divider" viewBox="0 0 640 40" aria-hidden="true" focusable="false">
+  <path d="M0 20 C80 6 140 34 220 20 S 290 8 300 20" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 7"/>
+  <path d="M340 20 C350 32 420 6 500 20 S 580 34 640 20" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 7"/>
+  <g transform="translate(320 20)" fill="currentColor"><path d="M0-16 4-4 16 0 4 4 0 16-4 4-16 0-4-4Z"/><circle r="2.5" fill="var(--bg)"/></g>
+</svg>
+
+<section id="taste" aria-labelledby="taste-h">
+  <div class="wrap">
+    <h2 id="taste-h">A taste</h2>
+    <div class="stories">
+      <article class="story">
+        <img src="images/scene-first-day.webp" alt="Voxel concept art of a traveller on a dirt road beside a stone milestone overlooking a walled town" width="900" height="672" loading="lazy">
+        <div>
+          <p class="who">Day one</p>
+          <h3>Nobody knows you</h3>
+          <p>You start beside a road, a day or two from the nearest town. A board in the square asks for help with wolves at a farm. You deal with them, bring back a note signed by the farmer, and the guild clerk pays you in coin. Next time you pass the gate, the guard nods to you.</p>
+        </div>
+      </article>
+      <article class="story">
+        <img src="images/scene-iron-mine.webp" alt="Voxel concept art of an active hillside iron mine with ore carts and glowing forge below" width="900" height="672" loading="lazy">
+        <div>
+          <p class="who">A generation</p>
+          <h3>The iron mine</h3>
+          <p>The town’s smith pays too much for iron, so you help open a mine in the hills. Steady ore lets him take on an apprentice. Years on, the old smith is buried behind the chapel, the apprentice runs the forge, and his daughter keeps the mine’s books. The town has doubled, and the country across the river has started asking who owns those hills.</p>
+        </div>
+      </article>
+      <article class="story">
+        <img src="images/scene-rulers-morning.webp" alt="Voxel concept art of a ruler's desk in a treasury with sealed documents, ledgers, and a map" width="900" height="672" loading="lazy">
+        <div>
+          <p class="who">If you rule</p>
+          <h3>A morning at the treasury</h3>
+          <p>Your treasurer has left proposals on the desk. You press your seal on “repair the north wall” and tear up “raise the grain tax”, and by afternoon there is scaffolding on the wall. A messenger says forts are going up across the river, so you set banners on the map table and the marshal moves troops to the ford. Tomorrow you ride out to look for yourself. Officials are less honest about places you never visit.</p>
+        </div>
+      </article>
+      <article class="story">
+        <img src="images/world-ruins-and-war.webp" alt="Voxel concept art of an overgrown ruined capital with stairs descending into darkness and a distant border fort at dusk" width="1600" height="893" loading="lazy">
+        <div>
+          <p class="who">Before you arrived</p>
+          <h3>The fallen capital</h3>
+          <p>The world ran for centuries before you spawned. Kingdoms rose and fell, and their ruins stand where it happened. An old man at the inn says the two crowns have hated each other since a war two hundred years ago, and the library has the chronicle that says why. Under the ruined capital, down the old stairs, lies the way to the End.</p>
+        </div>
+      </article>
+    </div>
+    <p class="art-note">Images: AI-generated concept art, not in-game footage</p>
+  </div>
+</section>
+
+<section id="paths" aria-labelledby="paths-h">
+  <div class="wrap">
+    <h2 id="paths-h">Be anyone</h2>
+    <p class="lede narrow">No classes: helping where the world asks opens each path.</p>
+    <div class="paths">
+      <div><h3><svg aria-hidden="true" focusable="false"><use href="#i-sword"/></svg>Combat and danger</h3>
+        <ul class="tags"><li>Adventurer</li><li>Caravan guard</li><li>Bounty hunter</li><li>Outlaw</li><li>Soldier</li></ul></div>
+      <div><h3><svg aria-hidden="true" focusable="false"><use href="#i-coin"/></svg>Economy</h3>
+        <ul class="tags"><li>Craftsman</li><li>Merchant</li><li>Landowner and farmer</li><li>Innkeeper and shopkeeper</li></ul></div>
+      <div><h3><svg aria-hidden="true" focusable="false"><use href="#i-scroll"/></svg>Knowledge and society</h3>
+        <ul class="tags"><li>Scholar and cartographer</li><li>Builder</li><li>Diplomat</li><li>Clergy</li></ul></div>
+      <div><h3><svg aria-hidden="true" focusable="false"><use href="#i-crown"/></svg>Power</h3>
+        <ul class="tags"><li>Commander</li><li>Settlement founder</li><li>Noble and ruler</li><li>Homeowner</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section id="world" aria-labelledby="world-h">
+  <div class="wrap">
+    <h2 id="world-h">How it plays</h2>
+    
+    <ul class="cards">
+      <li class="card"><h3>No menus</h3><p>Trade hand to hand, read letters like books, ask people the way.</p></li>
+      <li class="card"><h3>People who talk back</h3><p>NPCs know only what they know. Optional AI lets you talk freely; it is never required.</p></li>
+      <li class="card"><h3>Alone or on a server</h3><p>NPCs fill every job, so you never wait for other players. On a server, a steward runs your country while you are offline.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section id="thread" aria-labelledby="thread-h">
+  <div class="wrap">
+    <h2 id="thread-h">Pull one thread</h2>
+    <p class="lede narrow">The systems are tied together, so one event runs through all of them. Here is what a burned bridge can do.</p>
+    <ol class="thread">
+      <li><span class="when">Day 1</span><p>Bandits burn the stone bridge on the iron road.</p></li>
+      <li><span class="when">Day 2</span><p>Ore stops reaching the smith. Tools cost twice as much, and farmers who can’t replace a broken plough sow less.</p></li>
+      <li><span class="when">Day 4</span><p>You hear about it from a carter at the inn. He has half the details wrong.</p></li>
+      <li><span class="when">Day 5</span><p>The guild board has a contract to clear the road. You take it, and the clerk hands you the paper with its seal.</p></li>
+      <li><span class="when">Week 2</span><p>With the road safe, you pay masons to rebuild the bridge. The town ledger records whose money it was.</p></li>
+      <li><span class="when">Week 3</span><p>Carts are back. The inn by the bridge hires a second cook, and the guard at the gate greets you by name.</p></li>
+      <li><span class="when">Years later</span><p>The chronicle still says who rebuilt the bridge. So does a stone set into it.</p></li>
+    </ol>
+
+    <h3 class="sub">Made to be extended</h3>
+    <p class="narrow">The core has no fixed setting. Cultures, goods, technologies, guilds, monsters and faiths are data, and a code API lets addons add new behaviour. Even the standard experience is an addon built on those same APIs. So an addon could bring magic, with mage guilds and towers that cities build once they can afford one, or carry nations past the pre-industrial age into a later era. Trade, war and diplomacy pick up whatever it adds.</p>
+  </div>
+</section>
+
+<section id="status" aria-labelledby="status-h">
+  <div class="wrap">
+    <h2 id="status-h">Where it stands</h2>
+    <p>One developer, Fabric first. So far, a townsperson walks to work, runs a shop, and goes home.</p>
+  </div>
+</section>
+
+<svg class="divider" viewBox="0 0 640 40" aria-hidden="true" focusable="false">
+  <path d="M0 22 C100 8 180 34 300 20" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 7"/>
+  <path d="M340 20 C460 6 540 34 640 18" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 7"/>
+  <g transform="translate(320 20)" fill="none" stroke="currentColor" stroke-width="2"><path d="M-8-8 8 8M8-8-8 8"/></g>
+</svg>
+
+<section id="survey" aria-labelledby="survey-h">
+  <div class="wrap">
+    <h2 id="survey-h">Would you play this?</h2>
+    <p>All optional. Nothing is sent or stored; <em>Done</em> gives you text to copy.</p>
+
+    <form class="survey" id="survey-form" novalidate>
+      <fieldset>
+        <legend>Which paths would you play?</legend>
+        <div class="chips" data-group="paths"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>How interested are you, from 1 to 5?</legend>
+        <div class="chips" data-group="interest"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Where would you play?</legend>
+        <div class="chips" data-group="where"></div>
+      </fieldset>
+
+      <div class="field">
+        <label class="block" for="comment">Anything to add?</label>
+        <textarea id="comment" name="comment"></textarea>
+      </div>
+
+      <div class="field">
+        <label class="block" for="contact">Your name or handle</label>
+        <input type="text" id="contact" name="contact" autocomplete="nickname">
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Done</button>
+        <button type="reset" class="btn btn-ghost">Start over</button>
+      </div>
+
+      <div class="result" id="result" hidden>
+        <h3 id="result-h" tabindex="-1">Your answers</h3>
+        <pre id="summary"></pre>
+        <div class="form-actions">
+          <button type="button" class="btn btn-primary" id="copy">Copy</button>
+          <a class="btn btn-ghost" id="feedback-link" hidden target="_blank" rel="noopener">Open the feedback page</a>
+        </div>
+        <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Apart from the one working townsperson, all of this is planned.</p>
+    <p>Illustrations: AI-generated concept art (Nano Banana Pro). They show the vision, not the current game.</p>
+    <p>Not an official Minecraft product; not associated with Mojang or Microsoft.</p>
+  </div>
+</footer>
+
+<script>
+// Developer: put a link here (a form, a forum thread, a Discord invite) to show it after "Done".
+// Leave it empty and no link is shown. The page never sends or stores anything either way.
+const FEEDBACK_URL = "";
+
+(function () {
+  "use strict";
+
+  const groups = {
+    paths: { type: "checkbox", options: [
+      "Adventurer", "Caravan guard", "Bounty hunter", "Outlaw", "Soldier",
+      "Craftsman", "Merchant", "Landowner and farmer", "Innkeeper and shopkeeper",
+      "Scholar and cartographer", "Builder", "Diplomat", "Clergy",
+      "Commander", "Settlement founder", "Noble and ruler", "Homeowner"
+    ]},
+    interest: { type: "radio", options: ["1", "2", "3", "4", "5"] },
+    where: { type: "radio", options: ["Singleplayer", "On a server", "Both", "Not sure yet"] }
+  };
+
+  // Build the option chips with real inputs and labels.
+  Object.keys(groups).forEach(function (key) {
+    const g = groups[key];
+    const box = document.querySelector('[data-group="' + key + '"]');
+    g.options.forEach(function (opt, i) {
+      const id = key + "-" + i;
+      const wrap = document.createElement("div");
+      wrap.className = "chip";
+      const input = document.createElement("input");
+      input.type = g.type;
+      input.name = key;
+      input.id = id;
+      input.value = opt;
+      const label = document.createElement("label");
+      label.htmlFor = id;
+      label.textContent = opt;
+      wrap.appendChild(input);
+      wrap.appendChild(label);
+      box.appendChild(wrap);
+    });
+  });
+
+  const form = document.getElementById("survey-form");
+  const result = document.getElementById("result");
+  const summary = document.getElementById("summary");
+  const copyBtn = document.getElementById("copy");
+  const status = document.getElementById("copy-status");
+  const link = document.getElementById("feedback-link");
+
+  function values(name) {
+    return Array.prototype.map.call(form.querySelectorAll('input[name="' + name + '"]:checked'), function (el) { return el.value; });
+  }
+
+  function buildSummary() {
+    const lines = ["Crown & Charter: my answers", ""];
+    const none = "(no answer)";
+    const paths = values("paths");
+    lines.push("Paths I'd play: " + (paths.length ? paths.join(", ") : none));
+    lines.push("Interest: " + (values("interest")[0] ? values("interest")[0] + " of 5" : none));
+    lines.push("Where I'd play: " + (values("where")[0] || none));
+    const comment = document.getElementById("comment").value.trim();
+    lines.push("Comment: " + (comment || none));
+    const contact = document.getElementById("contact").value.trim();
+    if (contact) lines.push("Contact: " + contact);
+    return lines.join("\n");
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    summary.textContent = buildSummary();
+    status.textContent = "";
+    if (FEEDBACK_URL) { link.href = FEEDBACK_URL; link.hidden = false; } else { link.hidden = true; }
+    result.hidden = false;
+    document.getElementById("result-h").focus();
+  });
+
+  form.addEventListener("reset", function () {
+    result.hidden = true;
+    summary.textContent = "";
+    status.textContent = "";
+  });
+
+  function fallbackCopy(text) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (err) { ok = false; }
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  copyBtn.addEventListener("click", function () {
+    const text = summary.textContent;
+    const done = function () { status.textContent = "Copied. Now paste it where you found this page."; };
+    const failed = function () {
+      // Last resort: select the text so the reader can copy it by hand.
+      const range = document.createRange();
+      range.selectNodeContents(summary);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      status.textContent = "Couldn't copy automatically. The text is selected: press Ctrl+C (or Cmd+C) to copy it.";
+    };
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text) ? done() : failed(); });
+    } else {
+      fallbackCopy(text) ? done() : failed();
+    }
+  });
+})();
+</script>
+</body>
+</html>
